@@ -9,10 +9,10 @@ def main():
         chunks = line.split(',')
         tr.insert(chunks[1])
     
-    result = tr.search("João")
+    #result = tr.search("João")
     
-    for answer in result:
-        print(answer)    
+    #for answer in result:
+        #print(answer)         
     
 if __name__ == "__main__":
     main()

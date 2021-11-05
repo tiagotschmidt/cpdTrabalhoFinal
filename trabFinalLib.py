@@ -40,3 +40,17 @@ class trie(object):#Objeto da Árvore Trie, em si.
         self.depthFirstSearch(node,word[:-1])
         
         return self.output
+        
+def hashing(soFifaId,m):
+    return (soFifaId % m)
+
+def insertHash(Hashtable,m,soFifaId,averageRating, totalRating):
+    value = hashing(soFifaId,m)
+    Hashtable[value].append([soFifaId,averageRating,totalRating])
+    
+def searchHash(soFifaId,Hashtable,m):
+    returnValue = -1
+    searchKey = hashing(soFifaId,m)
+    for j in range(len(Hashtable[searchKey])):
+        if(soFifaId == Hashtable[searchKey][j][0]):
+            return [Hashtable[searchKey][j]]
