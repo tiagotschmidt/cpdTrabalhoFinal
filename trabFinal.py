@@ -1,5 +1,14 @@
 import trabFinalLib as tLib
 
+def searchPlayer(name,hashTable,m,tr):
+    result = tr.search(name)
+    
+    for answer in result:
+        hashResult = tLib.searchHash(int(answer[1]),hashTable,m)        
+        if(hashResult):            
+            print("Nome:",answer[0]+". Rating médio:"+str(hashResult[0][1])+". Total de avaliações:"+str(hashResult[0][2]))  
+        else:
+            print("Nome:",answer[0]) 
 
 def main():
     tr = tLib.trie()   
@@ -8,8 +17,7 @@ def main():
 
     for line in lines:        
         chunks = line.split(',')
-        tr.insert(chunks[1])
-        
+        tr.insert(chunks[1],chunks[0])       
     
     f = open("minirating.csv","r")#-----------Mecanismo de Leitura dos Ratings----------------------------------------------
     lines = f.readlines()
@@ -34,11 +42,15 @@ def main():
             rating.append(totalSum)
             rating.append(totalTimes)
             
-    HashTable = [[]for _ in range(6000)]    
-    
+    m = 6000
+    HashTable = [[]for _ in range(m)]    
+    index = 0
     for rating in ratingsMatrix:
         if(rating):
-            tLib.insertHash(HashTable,m,index,rating[0],rating[1])            
+            tLib.insertHash(HashTable,m,index,rating[0],rating[1])   
+        index = index + 1   
+        
+    searchPlayer("João",HashTable,m,tr)      
         
 if __name__ == "__main__":
     main()

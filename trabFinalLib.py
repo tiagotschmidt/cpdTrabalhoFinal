@@ -2,13 +2,14 @@ class trieNode: #Objeto Nó da Árvore Trie. Contém o chararactere(s), se é fi
     def __init__(self,char):
         self.char = char
         self.isEnd = False
+        self.soFifaId = None
         self.children = {}
         
 class trie(object):#Objeto da Árvore Trie, em si. 
     def __init__(self):
         self.root = trieNode("")
         
-    def insert(self,word):
+    def insert(self,word,soFifaId):
         node = self.root
         
         for char in word:
@@ -19,11 +20,12 @@ class trie(object):#Objeto da Árvore Trie, em si.
                 node.children[char] = newNode
                 node = newNode
         
-        node.isEnd = True    
+        node.isEnd = True 
+        node.soFifaId = soFifaId   
         
     def depthFirstSearch(self, node, prefixWord):
         if node.isEnd:
-            self.output.append((prefixWord + node.char))
+            self.output.append([(prefixWord + node.char),node.soFifaId])
             
         for child in node.children.values():
             self.depthFirstSearch(child,prefixWord + node.char)
