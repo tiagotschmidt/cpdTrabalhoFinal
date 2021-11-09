@@ -2,14 +2,19 @@ class trieNode: #Objeto Nó da Árvore Trie. Contém o chararactere(s), se é fi
     def __init__(self,char):
         self.char = char
         self.isEnd = False
+        self.soFifaId = None
+        self.positions = []
         self.children = {}
         
 class trie(object):#Objeto da Árvore Trie, em si. 
     def __init__(self):
         self.root = trieNode("")
         
-    def insert(self,word):
+    def insert(self,line):
         node = self.root
+        chunks = line.split(',')
+        word = chunks[1]
+        soFifaId = chunks[0]
         
         for char in word:
             if  char in node.children:
@@ -18,12 +23,18 @@ class trie(object):#Objeto da Árvore Trie, em si.
                 newNode = trieNode(char)
                 node.children[char] = newNode
                 node = newNode
+
+        for chunk in chunks[2:]:
+            if(chunk[-1] == "\n"):
+                chunk = chunk[:-1]  
+            node.positions.append(chunk)
         
-        node.isEnd = True    
+        node.isEnd = True 
+        node.soFifaId = soFifaId   
         
     def depthFirstSearch(self, node, prefixWord):
         if node.isEnd:
-            self.output.append((prefixWord + node.char))
+            self.output.append([(prefixWord + node.char),node.soFifaId,node.positions])
             
         for child in node.children.values():
             self.depthFirstSearch(child,prefixWord + node.char)
@@ -40,3 +51,17 @@ class trie(object):#Objeto da Árvore Trie, em si.
         self.depthFirstSearch(node,word[:-1])
         
         return self.output
+        
+def hashing(soFifaId,m):
+    return (soFifaId % m)
+
+def insertHash(Hashtable,m,soFifaId,averageRating, totalRating):
+    value = hashing(soFifaId,m)
+    Hashtable[value].append([soFifaId,averageRating,totalRating])
+    
+def searchHash(soFifaId,Hashtable,m):
+    returnValue = -1
+    searchKey = hashing(soFifaId,m)
+    for j in range(len(Hashtable[searchKey])):
+        if(soFifaId == Hashtable[searchKey][j][0]):
+            return [Hashtable[searchKey][j]]
