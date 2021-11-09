@@ -2,15 +2,15 @@ import trabFinalLib as tLib
 import matplotlib.pyplot as plt
 
 def hashingsTests():
-    f = open("minirating.csv","r")#-----------Mecanismo de Leitura dos Ratings----------------------------------------------
+    f = open("rating.csv","r")#-----------Mecanismo de Leitura dos Ratings----------------------------------------------
     lines = f.readlines()
 
-    ratingsMatrix = [[]for _ in range(300000)] 
+    ratingsMatrix = [[]for _ in range(300000)]   
 
-    for line in lines[1:]:
+    for line in lines[1:]:   
         chunks = line.split(',')    
-        value = chunks[2]
-        value = value[:-1]      
+        value = chunks[2]       
+        value = value[:-1]    
         ratingsMatrix[int(chunks[1])].append(value)     
 
     for rating in ratingsMatrix:
@@ -25,20 +25,21 @@ def hashingsTests():
             rating.append(totalSum)
             rating.append(totalTimes)        
 
-                                 #-----------Mecanismo de Leitura dos Ratings---------------------------------------------- 
+                                  #-----------Mecanismo de Leitura dos Ratings---------------------------------------------- 
         
-    m = 40000                    #TestesProvisórios    
+    m = 40000#TestesProvisórios    
     
     allTIndex = []
     allN = []
     allH = []
-    allM = [[]for _ in range(1000)]  
-    
-    #for i in range(1000):
-        #allM[i] = 3000 + (i*20)
+    allM = [[]for _ in range(3000)]  
+
+    for i in range(3000):
+        allM[i] = 17000 + (i)  
     
     for m in allM:
         HashTable503 = [[]for _ in range(m)]
+        #print(m)
         
         index = 0
         totalEntrys = 0
@@ -61,10 +62,8 @@ def hashingsTests():
                     totalSons = totalSons+1
                 if(totalSons > 1):
                     valuesOverused = valuesOverused + 1
-            totalCycles = totalCycles + 1
-        
-        #tIndex = float(totalItems/totalCycles) * (1-float(valuesOverused/totalItems))
-        #tIndex = float(10000*totalItems*totalItems*totalItems/(totalCycles*totalCycles*totalCycles*valuesOverused*valuesOverused))
+            totalCycles = totalCycles + 1        
+       
         tIndex = float(totalItems/totalCycles)*(1-float(valuesOverused/totalItems))
         allTIndex.append(tIndex)  
         #print(totalCycles)
@@ -78,7 +77,8 @@ def hashingsTests():
         allH.append(1-float(valuesOverused/totalItems))
         
     #print("Total de entradas")    
-    #print(totalEntrys)
+    #print(totalEntrys)    
+
     #print("Elenco de M")
     #print(allM)  
     #print("Elenco de N")
@@ -99,19 +99,23 @@ def hashingsTests():
     plt.ylabel('Índice N')
     plt.show()
 
-def main():
-    tr = tLib.trie()   
+def trieTest():
+    tr = tLib.trie()#Sistema de teste da árvore trie  
     f = open("players.csv","r")
     lines = f.readlines()
 
     for line in lines:        
         chunks = line.split(',')
-        tr.insert(chunks[1])
+        tr.insert(chunks[1],chunks[0])
     
-    result = tr.search("João")
+    result = tr.search("Tiago")
     
     for answer in result:
-        #print(answer)    
+        print(answer)    
+
+def main():
+    hashingsTests()
+    
     
 if __name__ == "__main__":
     main()
