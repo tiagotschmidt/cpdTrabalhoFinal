@@ -10,11 +10,12 @@ class trie(object):#Objeto da Árvore Trie, em si.
     def __init__(self):
         self.root = trieNode("")
         
-    def insert(self,line):
+    def insert(self,line,nameHashTable,mNames):
         node = self.root
         chunks = line.split(',')
         word = chunks[1]
-        soFifaId = chunks[0]
+        soFifaId = int(chunks[0])       
+        insertHashName(nameHashTable,mNames,soFifaId,word)
         
         for char in word:
             if  char in node.children:
@@ -55,13 +56,31 @@ class trie(object):#Objeto da Árvore Trie, em si.
 def hashing(soFifaId,m):
     return (soFifaId % m)
 
+def insertHashUser(Hashtable,m, uid, rating):
+    value = hashing(uid,m)
+    Hashtable[value].append(rating)
+
+def insertHashName(Hashtable,m,soFifaId, name):
+    value = hashing(soFifaId,m)
+    Hashtable[value].append([soFifaId,name])
+
 def insertHash(Hashtable,m,soFifaId,averageRating, totalRating):
     value = hashing(soFifaId,m)
     Hashtable[value].append([soFifaId,averageRating,totalRating])
     
-def searchHash(soFifaId,Hashtable,m):
+def searchHash(index,Hashtable,m):
     returnValue = -1
-    searchKey = hashing(soFifaId,m)
+    searchKey = hashing(index,m)
     for j in range(len(Hashtable[searchKey])):
-        if(soFifaId == Hashtable[searchKey][j][0]):
+        if(index == Hashtable[searchKey][j][0]):
             return [Hashtable[searchKey][j]]
+
+def searchHashUser(index,Hashtable,m):
+    returnList = []
+    searchKey = hashing(index,m)    
+    for j in range(len(Hashtable[searchKey])):         
+        chunks = Hashtable[searchKey][j].split(',') 
+        if(int(chunks[0]) == index):           
+            returnList.append([chunks[1],chunks[2]]) 
+    return returnList
+        
