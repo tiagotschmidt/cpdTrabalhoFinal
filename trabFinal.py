@@ -38,6 +38,24 @@ def searchPosition(maxSearch,pos,trPos,hashTableRatings,mRatings,hashTableName,m
         print("SOFIFA_ID:",answer[0],". Name:",name,". Player_positions:",trieNameR[0][2],". Rating:"+str(answer[1])+". Count:"+str(answer[2])) 
         isDone = isDone + 1
 
+def searchTags(tagList,tr,hashTableName,mNames,trNames,hashTableRatings,mRatings):#Função searchPlayer. Executa a busca do nome na trie. Assim que obtém uma lista de resultas, consulta cada nome completo e seu id para resgatar demais informações.
+    if(len(tagList) > 1):
+        result = tr.search(tagList[0])[0][1]    
+        for tag in tagList:
+            newTagResult = tr.search(tag)[0][1]    
+            result = list(set(result).intersection(set(newTagResult)))
+    else:
+        result = tr.search(tagList[0])   
+
+    for answer in result:
+        hashResult = tLib.searchHash(int(answer),hashTableRatings,mRatings)     
+        name = tLib.searchHash(int(answer),hashTableName,mNames)[0][1]
+        trieNameR = trNames.search(name)   
+        if(hashResult):            
+            print("SOFIFA_ID:",answer,". Name:",name,". Player_positions:",trieNameR[0][2],". Rating:"+str(hashResult[0][1])+". Count:"+str(hashResult[0][2]))  
+        else:
+            print("SOFIFA_ID:",answer,". Name:",name,". Player_positions:",trieNameR[0][2]) 
+
 def searchPlayer(name,hashTable,m,tr):#Função searchPlayer. Executa a busca do nome na trie. Assim que obtém uma lista de resultas, consulta cada nome completo e seu id para resgatar demais informações.
     result = tr.search(name)
     
@@ -64,7 +82,15 @@ def main():#Função main. Executada ao iniciar.
         trNames.insert(line,nameHashTable,mNames) 
         trPos.insert(line) 
 
-    t = open("rating.csv","r")#Mecanismo de Leitura dos ratings. Inserção na Hash.
+    trTags = tLib.trieTags()#Mecanismo de Leitura e Inserção na Trie e na Hash do nome.   
+    w = open("tags.csv","r")
+    lines = w.readlines()
+
+    #Leitura do arquivo de jogadores.
+    for line in lines[1:]:      
+        trTags.insert(line)        
+
+    t = open("minirating.csv","r")#Mecanismo de Leitura dos ratings. Inserção na Hash.
     lines = t.readlines()
 
     ratingsMatrix = [[]for _ in range(300000)]#Tabela para meta-processamento das ratings.    
@@ -103,13 +129,15 @@ def main():#Função main. Executada ao iniciar.
         index = index + 1        
     
     f.close()
-    t.close()    
+    t.close()  
+    w.close()    
    
     end_time = time.time()
     total_time = end_time - start_time     
+    searchTags(["Brazil","Dribbler"],trTags,nameHashTable,mNames,trNames,HashTableRatings,mRatings)
     #searchPosition(10,"ST",trPos,HashTableRatings,mRatings,nameHashTable,mNames,trNames)
     #searchPlayer("Lionel Andrés",HashTableRatings,mRatings,trNames)
-    searchUser(4,HashTableUser,mUsers,nameHashTable,mNames,HashTableRatings,mRatings)
+    #searchUser(4,HashTableUser,mUsers,nameHashTable,mNames,HashTableRatings,mRatings)
     print("Tempo(s): ", total_time)
 
 if __name__ == "__main__":
