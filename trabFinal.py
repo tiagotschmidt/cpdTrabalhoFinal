@@ -1,14 +1,21 @@
 import trabFinalLib as tLib
 import time
+import random
 
 def searchUser(uid,hashTableUser,mUsers,hashTableName,mNames,hashTableRatings,mRatings):#Função searchPlayer. Executa a busca do nome na trie. Assim que obtém uma lista de resultas, consulta cada nome completo e seu id para resgatar demais informações.
-    result = tLib.searchHashUser(uid,hashTableUser,mUsers)
-      
-    for rating in result:        
+    result = tLib.searchHashUser(uid,hashTableUser,mUsers)    
+    tLib.quickSort(result,0,len(result) - 1)   
+    isDone = 0
+    
+    for rating in reversed(result):  
+        if(isDone > 20):
+            break         
         soFifaId = int(rating[0])
         name = tLib.searchHash(soFifaId,hashTableName,mNames)[0][1]
         globalRatings = tLib.searchHash(soFifaId,hashTableRatings,mRatings)   
-        print("SOFIFA_ID:",rating[0],". Name:",name,". Global Rating:"+str(globalRatings[0][1])+". Count:"+str(globalRatings[0][2]),". Rating:",rating[1])         
+        print("SOFIFA_ID:",rating[0],". Name:",name,". Global Rating:"+str(globalRatings[0][1])+". Count:"+str(globalRatings[0][2]),". Rating:",rating[1])   
+        isDone = isDone + 1
+
     
 def searchPlayer(name,hashTable,m,tr):#Função searchPlayer. Executa a busca do nome na trie. Assim que obtém uma lista de resultas, consulta cada nome completo e seu id para resgatar demais informações.
     result = tr.search(name)
@@ -22,6 +29,7 @@ def searchPlayer(name,hashTable,m,tr):#Função searchPlayer. Executa a busca do
 
 def main():#Função main. Executada ao iniciar.
     start_time = time.time()#Mecanimo de cálculo para tempo.
+
     mNames = 18880
     nameHashTable = [[]for _ in range(mNames)]#Tabela Hash para identicação do nome, através do id.
 
@@ -29,6 +37,7 @@ def main():#Função main. Executada ao iniciar.
     f = open("players.csv","r")
     lines = f.readlines()
 
+    #Leitura do arquivo de jogadores.
     for line in lines[1:]:       
         tr.insert(line,nameHashTable,mNames)  
 
@@ -38,14 +47,16 @@ def main():#Função main. Executada ao iniciar.
     ratingsMatrix = [[]for _ in range(300000)]#Tabela para meta-processamento das ratings.    
     mUsers = 9725
     HashTableUser = [[]for _ in range(mUsers)]#Tabela Hash utilizada para indexação dos usuários avaliadores.  
-      
+    
+    #Leitura do arquivo de ratings. 
     for line in lines[1:]:
         chunks = line.split(',')           
         value = chunks[2]
-        value = value[:-1]        
+        value = value[:-1] 
         ratingsMatrix[int(chunks[1])].append(value) 
         tLib.insertHashUser(HashTableUser,mUsers,int(chunks[0]),chunks[0]+","+chunks[1]+","+value)  
         
+    #Etapa de pre-processamento dos ratings. Reune e salva as médias para cada jogador.
     for rating in ratingsMatrix:
         if(rating):            
             totalSum = 0
@@ -58,9 +69,10 @@ def main():#Função main. Executada ao iniciar.
             rating.append(totalSum)
             rating.append(totalTimes)   
         
-            
+       
+    #Tabela Hash Para os Ratings Globais de cada jogador.     
     mRatings = 18880
-    HashTableRatings = [[]for _ in range(mRatings)]#Tabela Hash utilizada.    
+    HashTableRatings = [[]for _ in range(mRatings)]
     index = 0
     for rating in ratingsMatrix:
         if(rating):
@@ -71,8 +83,8 @@ def main():#Função main. Executada ao iniciar.
     t.close()    
    
     end_time = time.time()
-    total_time = end_time - start_time
-    #searchUser(4,HashTableUser,mUsers,nameHashTable,mNames,HashTableRatings,mRatings)
+    total_time = end_time - start_time    
+    searchUser(4,HashTableUser,mUsers,nameHashTable,mNames,HashTableRatings,mRatings)
     print("Tempo(s): ", total_time)
 
 if __name__ == "__main__":

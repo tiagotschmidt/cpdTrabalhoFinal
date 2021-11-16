@@ -260,4 +260,10 @@ if __name__ == "__main__":
 
     
 
-    
+    print(result)
+    test = [[]for _ in range(100)]
+    for i in range(100):
+        test[i] = [random.randrange(1,100),random.randrange(1,1000)]
+    print(test)
+    tLib.quickSort(test,0,len(test) - 1)
+    print(test)
