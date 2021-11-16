@@ -81,6 +81,34 @@ def searchHashUser(index,Hashtable,m):
     for j in range(len(Hashtable[searchKey])):         
         chunks = Hashtable[searchKey][j].split(',') 
         if(int(chunks[0]) == index):           
-            returnList.append([chunks[1],chunks[2]]) 
+            returnList.append([chunks[1],float(chunks[2])]) 
     return returnList
         
+
+def partition(RatingsArray, start, end):
+    pivot = RatingsArray[start][1]
+    low = start + 1
+    high = end
+
+    while True:
+        while(low <= high and RatingsArray[high][1] >= pivot):
+            high = high - 1
+        while(low <= high and RatingsArray[low][1] <= pivot):
+            low = low + 1
+
+        if low <= high:
+            RatingsArray[low][1], RatingsArray[high][1] = RatingsArray[high][1], RatingsArray[low][1]
+        else:
+            break
+
+
+    RatingsArray[start][1], RatingsArray[high][1] = RatingsArray[high][1], RatingsArray[start][1]
+    return high
+
+def quickSort(RatingsArray, start, end):
+    if start >= end:
+        return 
+
+    p = partition(RatingsArray, start, end)
+    quickSort(RatingsArray, start, p-1)
+    quickSort(RatingsArray, p+1, end)
