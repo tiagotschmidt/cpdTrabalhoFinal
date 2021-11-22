@@ -1,66 +1,65 @@
 import trabFinalLib as tLib
 import time
-import random
 
-def searchUser(uid,hashTableUser,mUsers,hashTableName,mNames,hashTableRatings,mRatings):#Função searchPlayer. Executa a busca do nome na trie. Assim que obtém uma lista de resultas, consulta cada nome completo e seu id para resgatar demais informações.
-    result = tLib.searchHashUser(uid,hashTableUser,mUsers)    
-    tLib.quickSort(result,0,len(result) - 1)   
-    isDone = 0
+def searchUser(uid,hashTableUser,mUsers,hashTableName,mNames,hashTableRatings,mRatings):#Função searchUser. Executa a busca das avaliações por ID de usuário.
+    result = tLib.searchHashUser(uid,hashTableUser,mUsers)#Busca as avaliações por ID do usuário.    
+    tLib.quickSort(result,0,len(result) - 1)#Organiza as avaliações por rating.   
+    isDone = 0 #Mecanismo de parada máxima: 20 avaliações.
     
-    for rating in reversed(result):  
+    for rating in reversed(result):#Printa em ordem reversa, ou seja, os maiores 20 avaliações.
         if(isDone > 20):
             break         
-        soFifaId = int(rating[0])
-        name = tLib.searchHash(soFifaId,hashTableName,mNames)[0][1]
-        globalRatings = tLib.searchHash(soFifaId,hashTableRatings,mRatings)   
+        soFifaId = int(rating[0])#Extrai o sofifaId.
+        name = tLib.searchHash(soFifaId,hashTableName,mNames)[0][1]#Resgata o nome através do sofifaId
+        globalRatings = tLib.searchHash(soFifaId,hashTableRatings,mRatings)#Resgata os ratings globais por sofifaId.   
         print("SOFIFA_ID:",rating[0],". Name:",name,". Global Rating:"+str(globalRatings[0][1])+". Count:"+str(globalRatings[0][2]),". Rating:",rating[1])   
         isDone = isDone + 1
 
-def searchPosition(maxSearch,pos,trPos,hashTableRatings,mRatings,hashTableName,mNames,trNames):#Função searchPlayer. Executa a busca do nome na trie. Assim que obtém uma lista de resultas, consulta cada nome completo e seu id para resgatar demais informações.
-    result = trPos.search(pos)
+def searchPosition(maxSearch,pos,trPos,hashTableRatings,mRatings,hashTableName,mNames,trNames):#Função searchPosition. Executa a busca das posições por posições desejadas. 
+    result = trPos.search(pos)#Busca na trie das Posições a posição desejada.
 
-    playersList = result[0][1]
+    playersList = result[0][1]#Filtra a lista de jogadores da Posição
     answerList = []
-    for player in playersList:
-        ratingInfo = tLib.searchHash(player,hashTableRatings,mRatings)            
-        if(ratingInfo and int(ratingInfo[0][2]) > 1000):
-            answerList.append([player,float(ratingInfo[0][1]),int(ratingInfo[0][2])])          
+    for player in playersList:#Para cada jogador na lista de jogadores da Posição
+        ratingInfo = tLib.searchHash(player,hashTableRatings,mRatings)#Busca a avaliação do jogador.            
+        if(ratingInfo and int(ratingInfo[0][2]) > 1000):#Critérios definidos no enunciado, executa filtragem
+            answerList.append([player,float(ratingInfo[0][1]),int(ratingInfo[0][2])])#Criando a lista filtrada de jogadores da posição.
 
-    tLib.quickSort(answerList,0,len(answerList) - 1) 
+    tLib.quickSort(answerList,0,len(answerList) - 1)#Ordenamento dos jogadores filtrados por rating.
 
     isDone = 0
 
-    for answer in reversed(answerList):
-        if(isDone > maxSearch):
+    for answer in reversed(answerList):#Printa em ordem reversa, ou seja, as maiores avaliações.
+        if(isDone > maxSearch):#Mecanismo de parada, escolhido pelo usuário.
             break
-        name = tLib.searchHash(answer[0],hashTableName,mNames)[0][1]
-        trieNameR = trNames.search(name)        
+        name = tLib.searchHash(answer[0],hashTableName,mNames)[0][1]#Resgata o nome através do sofifaId(answer[0])
+        trieNameR = trNames.search(name)#Busca o elemento do jogador na Trie de nomes.
         print("SOFIFA_ID:",answer[0],". Name:",name,". Player_positions:",trieNameR[0][2],". Rating:"+str(answer[1])+". Count:"+str(answer[2])) 
         isDone = isDone + 1
 
-def searchTags(tagList,tr,hashTableName,mNames,trNames,hashTableRatings,mRatings):#Função searchPlayer. Executa a busca do nome na trie. Assim que obtém uma lista de resultas, consulta cada nome completo e seu id para resgatar demais informações.
-    if(len(tagList) > 1):
-        result = tr.search(tagList[0])[0][1]    
-        for tag in tagList:
+def searchTags(tagList,tr,hashTableName,mNames,trNames,hashTableRatings,mRatings):#Função searchTags. Executa a busca das tags.
+    if(len(tagList) > 1):#Caso a lista de tags tenha mais de um elemento, executa:
+        result = tr.search(tagList[0])[0][1]#Busca a lista de jogadores da primeira tag.
+        for tag in tagList:#Iterativamente, busca a intersecção de jogadores da lista atual, com a lista dos jogadores da tag atual.
             newTagResult = tr.search(tag)[0][1]    
             result = list(set(result).intersection(set(newTagResult)))
-    else:
+    else:#Se não, apenas busca na trie de tags
         result = tr.search(tagList[0])   
 
     for answer in result:
-        hashResult = tLib.searchHash(int(answer),hashTableRatings,mRatings)     
-        name = tLib.searchHash(int(answer),hashTableName,mNames)[0][1]
-        trieNameR = trNames.search(name)   
+        hashResult = tLib.searchHash(int(answer),hashTableRatings,mRatings)#Busca os ratings do jogador.s
+        name = tLib.searchHash(int(answer),hashTableName,mNames)[0][1]#Busca o nome do jogador.
+        trieNameR = trNames.search(name)#Busca o elemento na trie do Jogador.
         if(hashResult):            
             print("SOFIFA_ID:",answer,". Name:",name,". Player_positions:",trieNameR[0][2],". Rating:"+str(hashResult[0][1])+". Count:"+str(hashResult[0][2]))  
         else:
             print("SOFIFA_ID:",answer,". Name:",name,". Player_positions:",trieNameR[0][2]) 
 
-def searchPlayer(name,hashTable,m,tr):#Função searchPlayer. Executa a busca do nome na trie. Assim que obtém uma lista de resultas, consulta cada nome completo e seu id para resgatar demais informações.
-    result = tr.search(name)
+def searchPlayer(name,hashTable,m,tr):#Função searchPlayer. Executa a busca do nome na trie
+    result = tr.search(name)#Busca o nome na trie.
     
     for answer in result:
-        hashResult = tLib.searchHash(int(answer[1]),hashTable,m)        
+        hashResult = tLib.searchHash(int(answer[1]),hashTable,m)#Busca o rating global do soFifaId armazenado na trie.    
         if(hashResult):            
             print("SOFIFA_ID:",answer[1],". Name:",answer[0],". Player_positions:",answer[2],". Rating:"+str(hashResult[0][1])+". Count:"+str(hashResult[0][2]))  
         else:
@@ -70,27 +69,27 @@ def main():#Função main. Executada ao iniciar.
     start_time = time.time()#Mecanimo de cálculo para tempo.
 
     mNames = 18880
-    nameHashTable = [[]for _ in range(mNames)]#Tabela Hash para identicação do nome, através do id.
+    nameHashTable = [[]for _ in range(mNames)]#Tabela Hash para nomes. 
 
-    trNames = tLib.trieNames()#Mecanismo de Leitura e Inserção na Trie e na Hash do nome.   
-    trPos = tLib.triePositions()#Mecanismo de Leitura e Inserção na Trie e na Hash do nome.   
+    trNames = tLib.trieNames()#Definindo a trie de Nomes.
+    trPos = tLib.triePositions()#Definindo a trie de Posições.
     f = open("players.csv","r")
     lines = f.readlines()
 
     #Leitura do arquivo de jogadores.
     for line in lines[1:]:      
-        trNames.insert(line,nameHashTable,mNames) 
-        trPos.insert(line) 
+        trNames.insert(line,nameHashTable,mNames)#Grava a trie de Nomes, e a hash de nomes.
+        trPos.insert(line)#Grava a trie de Posições
 
-    trTags = tLib.trieTags()#Mecanismo de Leitura e Inserção na Trie e na Hash do nome.   
+    trTags = tLib.trieTags()#Definindo a trie de tags. 
     w = open("tags.csv","r")
     lines = w.readlines()
 
-    #Leitura do arquivo de jogadores.
+    #Leitura do arquivo de tags.
     for line in lines[1:]:      
-        trTags.insert(line)        
+        trTags.insert(line)#Grava a trie de tags.        
 
-    t = open("minirating.csv","r")#Mecanismo de Leitura dos ratings. Inserção na Hash.
+    t = open("rating.csv","r")#Leitura do arquivo de ratings.
     lines = t.readlines()
 
     ratingsMatrix = [[]for _ in range(300000)]#Tabela para meta-processamento das ratings.    
@@ -102,8 +101,8 @@ def main():#Função main. Executada ao iniciar.
         chunks = line.split(',')           
         value = chunks[2]
         value = value[:-1] 
-        ratingsMatrix[int(chunks[1])].append(value) 
-        tLib.insertHashUser(HashTableUser,mUsers,int(chunks[0]),chunks[0]+","+chunks[1]+","+value)  
+        ratingsMatrix[int(chunks[1])].append(value)#Grava a tabela intermediária dos ratings.
+        tLib.insertHashUser(HashTableUser,mUsers,int(chunks[0]),chunks[0]+","+chunks[1]+","+value)#Grava a hash do usuários.
         
     #Etapa de pre-processamento dos ratings. Reune e salva as médias para cada jogador.
     for rating in ratingsMatrix:
@@ -134,11 +133,14 @@ def main():#Função main. Executada ao iniciar.
    
     end_time = time.time()
     total_time = end_time - start_time     
-    searchTags(["Brazil","Dribbler"],trTags,nameHashTable,mNames,trNames,HashTableRatings,mRatings)
-    #searchPosition(10,"ST",trPos,HashTableRatings,mRatings,nameHashTable,mNames,trNames)
-    #searchPlayer("Lionel Andrés",HashTableRatings,mRatings,trNames)
-    #searchUser(4,HashTableUser,mUsers,nameHashTable,mNames,HashTableRatings,mRatings)
     print("Tempo(s): ", total_time)
+
+
+    searchTags(["Brazil","Dribbler"],trTags,nameHashTable,mNames,trNames,HashTableRatings,mRatings)
+    searchPosition(10,"ST",trPos,HashTableRatings,mRatings,nameHashTable,mNames,trNames)    
+    searchUser(4,HashTableUser,mUsers,nameHashTable,mNames,HashTableRatings,mRatings)
+    searchPlayer("Fer",HashTableRatings,mRatings,trNames)
+    
 
 if __name__ == "__main__":
     main()
