@@ -27,7 +27,7 @@ def searchPosition(maxSearch,pos,trPos,hashTableRatings,mRatings,hashTableName,m
 
     tLib.quickSort(answerList,0,len(answerList) - 1)#Ordenamento dos jogadores filtrados por rating.
 
-    isDone = 0
+    isDone = 1
 
     for answer in reversed(answerList):#Printa em ordem reversa, ou seja, as maiores avaliações.
         if(isDone > maxSearch):#Mecanismo de parada, escolhido pelo usuário.
@@ -136,10 +136,47 @@ def main():#Função main. Executada ao iniciar.
     print("Tempo(s): ", total_time)
 
 
-    searchTags(["Brazil","Dribbler"],trTags,nameHashTable,mNames,trNames,HashTableRatings,mRatings)
-    searchPosition(10,"ST",trPos,HashTableRatings,mRatings,nameHashTable,mNames,trNames)    
-    searchUser(4,HashTableUser,mUsers,nameHashTable,mNames,HashTableRatings,mRatings)
-    searchPlayer("Fer",HashTableRatings,mRatings,trNames)
+    #searchTags(["Brazil","Dribbler"],trTags,nameHashTable,mNames,trNames,HashTableRatings,mRatings)
+    #searchPosition(10,"ST",trPos,HashTableRatings,mRatings,nameHashTable,mNames,trNames)    
+    #searchUser(4,HashTableUser,mUsers,nameHashTable,mNames,HashTableRatings,mRatings)
+    #searchPlayer("Fer",HashTableRatings,mRatings,trNames)
+
+    while(True):
+        entryLine = input("$")
+        copyEntry = entryLine
+        chunks = entryLine.split(' ')
+
+        if(chunks[0] == "player"):
+            searchName = ""            
+            for chunk in chunks[1:]:
+                searchName = searchName + " " + chunk
+            if(searchName[0] == " "):
+                searchName = searchName[1:]
+            searchPlayer(searchName,HashTableRatings,mRatings,trNames)         
+        elif(chunks[0] == "user"):
+            searchUser(int(chunks[1]),HashTableUser,mUsers,nameHashTable,mNames,HashTableRatings,mRatings)
+        elif(chunks[0] == "tags"):
+            copyChunks = entryLine.split('\'')
+            copyChunks.remove(copyChunks[0])
+            for chunk in copyChunks:
+                if(chunk == "" or chunk == " "):
+                    copyChunks.remove(chunk) 
+                else:                   
+                    chunk = chunk[:-1] 
+                    chunk = chunk[1:]     
+            searchTags(copyChunks,trTags,nameHashTable,mNames,trNames,HashTableRatings,mRatings)
+        elif(chunks[0] == "exit"):
+            exit()              
+        else:
+            firstWord = chunks[0]
+            if(firstWord[0] == 't' and firstWord[1] == 'o' and firstWord[2] == 'p'):
+                totalN = firstWord[3:]
+                copyChunks = entryLine.split('\'')
+                copyChunks.remove(copyChunks[0])               
+                searchPosition(int(totalN),copyChunks[0],trPos,HashTableRatings,mRatings,nameHashTable,mNames,trNames)    
+            else:
+                print("Comando desconhecido.") 
+
     
 
 if __name__ == "__main__":
