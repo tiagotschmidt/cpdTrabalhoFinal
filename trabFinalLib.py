@@ -1,4 +1,4 @@
-class trieNodeNames: #Objeto Nó da Árvore Trie de nomes. Contém o chararactere(s), se é fim de palavra e seus filhos.
+class trieNodeNames: #Nó da Árvore Trie de nomes. Contém o chararactere(s), se é fim de palavra e seus filhos.
     def __init__(self,char):
         self.char = char
         self.isEnd = False
@@ -6,11 +6,11 @@ class trieNodeNames: #Objeto Nó da Árvore Trie de nomes. Contém o chararacter
         self.positions = []
         self.children = {}
         
-class trieNames(object):#Objeto da Árvore Trie para nomes, em si. 
+class trieNames(object):#Árvore Trie para nomes, em si. 
     def __init__(self):
         self.root = trieNodeNames("")
         
-    def insert(self,line,nameHashTable,mNames):
+    def insert(self,line,nameHashTable,mNames):#Nesta função, também já inserimos nomes em uma hash de nomes.
         node = self.root
         chunks = line.split(',')
         word = chunks[1]
@@ -53,14 +53,14 @@ class trieNames(object):#Objeto da Árvore Trie para nomes, em si.
         
         return self.output
 
-class trieNodePositions: #Objeto Nó da Árvore Trie. Contém o chararactere(s), se é fim de palavra e seus filhos.
+class trieNodePositions: #Nó da Árvore Trie de posições. Contém o chararactere(s), se é fim de palavra e seus filhos. Contém uma lista de jogadores da posição.
     def __init__(self,char):
         self.char = char
         self.isEnd = False        
         self.players = []
         self.children = {}
         
-class triePositions(object):#Objeto da Árvore Trie, em si. 
+class triePositions(object):#Árvore Trie de posições, em si. 
     def __init__(self):
         self.root = trieNodePositions("")
         
@@ -110,14 +110,14 @@ class triePositions(object):#Objeto da Árvore Trie, em si.
         
         return self.output
 
-class trieNodeTags: #Objeto Nó da Árvore Trie. Contém o chararactere(s), se é fim de palavra e seus filhos.
+class trieNodeTags: #Nó da Árvore Trie de tags. Contém o chararactere(s), se é fim de palavra e seus filhos. Contém uma lista de jogadores da tag.
     def __init__(self,char):
         self.char = char
         self.isEnd = False        
         self.players = []
         self.children = {}
         
-class trieTags(object):#Objeto da Árvore Trie, em si. 
+class trieTags(object):#Árvore Trie, em si. 
     def __init__(self):
         self.root = trieNodeTags("")
         
@@ -161,29 +161,29 @@ class trieTags(object):#Objeto da Árvore Trie, em si.
         
         return self.output
         
-def hashing(soFifaId,m):
+def hashing(soFifaId,m):#Função geral de hashing.
     return (soFifaId % m)
 
-def insertHashUser(Hashtable,m, uid, rating):
+def insertHashUser(Hashtable,m, uid, rating):#Função de inserção para usuários.
     value = hashing(uid,m)
     Hashtable[value].append(rating)
 
-def insertHashName(Hashtable,m,soFifaId, name):
+def insertHashName(Hashtable,m,soFifaId, name):#Função de inserção para nomes.
     value = hashing(soFifaId,m)
     Hashtable[value].append([soFifaId,name])
 
-def insertHash(Hashtable,m,soFifaId,averageRating, totalRating):
+def insertHash(Hashtable,m,soFifaId,averageRating, totalRating):#Função de inserção para avaliações.
     value = hashing(soFifaId,m)
     Hashtable[value].append([soFifaId,averageRating,totalRating])
     
-def searchHash(index,Hashtable,m):
+def searchHash(index,Hashtable,m):#Função de busca para avaliações, nomes.
     returnValue = -1
     searchKey = hashing(index,m)
     for j in range(len(Hashtable[searchKey])):
         if(index == Hashtable[searchKey][j][0]):
             return [Hashtable[searchKey][j]]
 
-def searchHashUser(index,Hashtable,m):
+def searchHashUser(index,Hashtable,m):#Função de busca para usuários.
     returnList = []
     searchKey = hashing(index,m)    
     for j in range(len(Hashtable[searchKey])):         
@@ -193,7 +193,7 @@ def searchHashUser(index,Hashtable,m):
     return returnList
         
 
-def partition(RatingsArray, start, end):
+def partition(RatingsArray, start, end):#Mecanismo de particionamento quicksort, adaptado à estruturas com arrays dentro de arrays.
     pivot = RatingsArray[start][1]
     low = start + 1
     high = end
@@ -213,7 +213,7 @@ def partition(RatingsArray, start, end):
     RatingsArray[start], RatingsArray[high] = RatingsArray[high], RatingsArray[start]
     return high
 
-def quickSort(RatingsArray, start, end):
+def quickSort(RatingsArray, start, end):#Função quicksort para arrays complexos.
     if start >= end:
         return 
 
